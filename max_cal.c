@@ -1,3 +1,12 @@
+/*
+** Author: Muhammad Abdullah Khan
+** Version: 1.0
+** Topic: Matrix Calculator
+** Rights: Open Source. Please make use in your own programms. Please learn and understand in case using for 
+** Assignments and tasks etc.
+*/
+
+
 #include <stdio.h>
 
 
@@ -6,16 +15,38 @@
 #define MAX_COL 50
 
 //Function declerations
+
+// this function takes input matrices from the file
 void parse_file(int a[MAX_COL][MAX_COL][MAX_COL]);
-int size_chk(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int type);
+// This function checks the sizes of the matrices
+// send the matrix and the variables as pointers to get the rows and cols
+void get_Max_Size(int max[MAX_COL][MAX_COL] , int *row , int *col);
+// This function is used to pick matrices from the file...
+// Send the master Matrix and send any two you want to populate and the matrix number in sequence you wish
+// to populate into the matrices.
 void parse_array(int main_array[MAX_COL][MAX_COL][MAX_COL], int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int num_a, int num_b);
+// Simple subtraction
 void subtract(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]);
+// Simple addition
 void addition(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]);
+// Simple unit tests for some functions
 void unit_test_add(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_COL][MAX_COL], int temp_a[MAX_COL][MAX_COL], int temp_b[MAX_COL][MAX_COL]);
-void print_array(int temp_res[MAX_COL][MAX_COL]);
 void unit_test_sub(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_COL][MAX_COL], int temp_a[MAX_COL][MAX_COL], int temp_b[MAX_COL][MAX_COL]);
-void multiply_strasson(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]);
+void unit_test_multiply(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_COL][MAX_COL], int temp_a[MAX_COL][MAX_COL], int temp_b[MAX_COL][MAX_COL]);
+
+//Simple element by element multiplication
 void simple_mul(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]);
+// Strasson multiplication function
+void multiply_strasson(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]);
+
+// Helper functions
+// Simple printing function
+void print_array(int temp_res[MAX_COL][MAX_COL]);
+//Clearing Matrix and populating it with zeros
+int clear_max(int max_to_be_cleared[MAX_COL][MAX_COL]);
+// This function makes a matrix a perfect square... To be used in strasson multiplication
+// This function populates the missing places with zeroes
+void size_maker(int max[MAX_COL][MAX_COL], int row, int col);
 
 /*
 * max_cal.c
@@ -47,12 +78,70 @@ int main() {
 
 
 	//Multiplication
-	printf("Here is the multiplication of a with b \n");
+	
+
+	printf("Second mul function used here!!");
 	simple_mul(a, b, c);
 	print_array(c);
+
+
+	//checking size maker
+	size_maker(a, 2, 2);
+	print_array(a);
 	getchar();
 	return 1;
 }
+
+// This function gets the no of rows and cols for some Matrix
+void get_Max_Size(int max[MAX_COL][MAX_COL] , int *row , int *col){
+
+	int i = 0;
+	int j = 0;
+	// Simply goto the end of the array col wise and add cols
+	while (max[i][j] != NULL) {
+		*col++;
+		j++;
+	}
+	j = 0;
+	// Simply goto the end of the array row wise and add rows
+	while (max[i][j] != NULL) {
+		*row++;
+		i++;
+	}
+
+}
+
+
+// THis function will be used to perform strasson multiplication this will square the matrices perfectly
+void size_maker(int max[MAX_COL][MAX_COL] , int row , int col) {
+	int local_row = row;
+	int local_col = col;
+	
+	if ((row+1) % 2 == 0 && (col+1) % 2 == 0) {
+		printf("I am here");
+		return;
+	}
+	else {
+		if ((row+1) % 2 != 0) {
+			while (col != -1) {
+				max[row+1][col] = 0;
+				col--;
+				printf("I am inside col maker");
+			}
+		}
+		row = local_row;
+		col = local_col;
+		if((col+1) % 2 != 0){
+			while (row+1 != -1) {
+				printf("I am inside row maker");
+				max[row+1][col+1] = 0;
+				row--;
+			}
+		}
+		return;
+	}
+}
+
 
 
 /*
@@ -62,66 +151,7 @@ If the arrays are fit for addition it will add else return 1;
 Similarly the same function will be used for testing if the arrays are fit for subtraction
 and multiplication!*/
 
-int size_chk(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int type) {
-	int i = 0;
-	int j = 0;
-	int a_cols = 0;
-	int a_rows = 0;
-	int b_cols = 0;
-	int b_rows = 0;
 
-	// Simply goto the end of the array col wise and add cols
-	while (a[i][j] != NULL) {
-		a_cols++;
-		j++;
-	}
-	j = 0;
-	// Simply goto the end of the array row wise and add rows
-	while (a[i][j] != NULL) {
-		a_rows++;
-		i++;
-	}
-	i = 0;
-
-	while (b[i][j] != NULL) {
-		b_cols++;
-		j++;
-	}
-	j = 0;
-	while (b[i][j] != NULL) {
-		b_rows++;
-		i++;
-	}
-
-	if (type == 0) { 	// check for addition and subtraction
-		if (a_rows == b_rows && a_cols == b_cols)
-		{
-			return 0;
-		}
-		else
-			return 1;
-	}
-	else {
-		// Check for multiplication!
-		//The number of columns of the 1st matrix must equal the number of rows of the 2nd matrix.
-		if (a_cols == b_rows) {
-			return 0;
-		}
-		else {
-			return 1;
-		}
-	}
-}
-
-
-/*void size_make(int a[][][]){
-int row_cols_a = 0;
-if (sizeof(a)==size)
-
-if (size of(b) % 8 == 0 ){
-row_cols_a = size of(a) / 8;
-}
-}*/
 
 void parse_file(int a[MAX_COL][MAX_COL][MAX_COL]) {
 	char c[1000];
@@ -208,8 +238,14 @@ void parse_array(int main_array[MAX_COL][MAX_COL][MAX_COL], int array_A[MAX_COL]
 void subtract(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]) {
 	int j = 0;
 	int i = 0;
-	int check = size_chk(a, b, 0);
-	if (check == 0) {
+	int a_rows = 0;
+	int a_cols = 0;
+	int b_rows = 0;
+	int b_cols = 0;
+
+	get_Max_Size(a, &a_rows, &a_cols);
+	get_Max_Size(a, &b_rows, &b_cols);
+	if (a_rows == b_rows && a_cols == b_rows) {
 		while (a[i][j] != NULL) {
 			while (a[i][j] != NULL) {
 				c[i][j] = a[i][j] - b[i][j];
@@ -229,8 +265,15 @@ void subtract(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][M
 
 // Simple Addition
 void addition(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]) {
-	int check = size_chk(a, b, 0);
-	if (check == 0) {
+	
+	int a_rows = 0;
+	int a_cols = 0;
+	int b_rows = 0;
+	int b_cols = 0;
+
+	get_Max_Size(a, &a_rows, &a_cols);
+	get_Max_Size(a, &b_rows, &b_cols);
+	if (a_rows == b_rows && a_cols == b_rows) {
 		int j = 0;
 		int i = 0;
 		while (a[i][j] != NULL) {
@@ -248,23 +291,20 @@ void addition(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][M
 	return;
 }
 
-void max_computer(void) {
 
-
-}
-
+// Simple Addition Unit Test
 void unit_test_add(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_COL][MAX_COL], int temp_a[MAX_COL][MAX_COL], int temp_b[MAX_COL][MAX_COL]) {
 	printf("Here is the addition test");
 	// Parse arrays from file
 	parse_array(main_array, temp_a, temp_b, 0, 1);
 	// Add the arrays
-	addition(temp_a, temp_b, temp_res);
+	addition(a, b, c);
 	
-	print_array(temp_res);
+	print_array(c);
 	return;
 }
 
-
+// SImple subtraction Unit Test
 void unit_test_sub(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_COL][MAX_COL], int temp_a[MAX_COL][MAX_COL], int temp_b[MAX_COL][MAX_COL]) {
 	printf("Here is the subtraction test");
 	parse_array(main_array, temp_a, temp_b, 0, 1);
@@ -273,15 +313,18 @@ void unit_test_sub(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_C
 	return;
 }
 
-
+// Simple multiplication Unit Test
 void unit_test_multiply(int main_array[MAX_COL][MAX_COL][MAX_COL], int temp_res[MAX_COL][MAX_COL], int temp_a[MAX_COL][MAX_COL], int temp_b[MAX_COL][MAX_COL]) {
 	printf("Here is the Multiplication test");
 	parse_array(main_array, temp_a, temp_b, 0, 1);
-	subtract(temp_a, temp_b, temp_res);
+	simple_mul(temp_a, temp_b], temp_res)
 	print_array(temp_res);
 	return;
 }
 
+
+// Matrix Printing Function
+// GOes element by element and prints the elements of the array
 void print_array(int temp_res[MAX_COL][MAX_COL]) {
 	int j = 0;
 	int i = 0;
@@ -305,6 +348,20 @@ void print_array(int temp_res[MAX_COL][MAX_COL]) {
 
 
 void multiply_strasson(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]) {
+	
+	int a_rows = 0;
+	int a_cols = 0;
+	int b_rows = 0;
+	int b_cols = 0;
+	
+	get_Max_Size(a, &a_rows, &a_cols);
+	get_Max_Size(b, &b_rows, &b_cols);
+
+	//Check if the matrix are fit for multiplication!!
+	if (a_cols == b_rows) {
+		size_maker(a, a_rows, a_cols);
+		size_maker(b, b_rows, b_cols);
+	}
 	int d[7] = { 0 };
 	d[0] = (a[1][1] + a[2][2]) * (b[1][1] + b[2][2]);
 	d[1] = (a[2][1] + a[2][2]) * (b[1][1]);
@@ -321,8 +378,11 @@ void multiply_strasson(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[M
 	return;
 }
 
+// Simple multiplication function!
 void simple_mul(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL][MAX_COL]) {
-	int check = size_chk(a, b, 1);
+	
+	//Check if the matrices are fit for multiplication 
+	// Variable decleration
 	int a_row = 0;
 	int a_col = 0;
 	int b_row = 0;
@@ -330,18 +390,47 @@ void simple_mul(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL]
 	int c_row = 0;
 	int c_col = 0;
 
-	if (check == 0) {
+	// Emtying matrix c so no previous data inside
+	clear_max(c);
+
+
+	//Only for check
+	int a_rows = 0;
+	int a_cols = 0;
+	int b_rows = 0;
+	int b_cols = 0;
+
+	get_Max_Size(a, &a_rows, &a_cols);
+	get_Max_Size(a, &b_rows, &b_cols);
+
+	// Check will be performed
+	if (a_rows == b_rows && a_cols == b_rows) {								// In case fit for multiplication 
+		// N^3 process hence 3 loops
 		while (a[a_row][a_col] != NULL) {
 			while (b[b_row][b_col] != NULL) {
-				c[c_row][c_col] = (a[a_row][a_col] * b[b_row][b_col]) + (a[a_row][a_col + 1] * b[b_row + 1][b_col]) + (a[a_row][a_col + 2] * b[b_row + 2][b_col]);
+				while (a[a_row][a_col] != NULL) {
+
+					// Multiply each element in the row of first with consecutive collum of second!
+					c[c_row][c_col] += a[a_row][a_col] * b[b_row][b_col];
+					a_col++;
+					b_row++;
+				}
+
+				// Increment the colum of matrix B and perform the above loop again!!
 				b_col++;
-				c_col++;
+				a_col = 0;
+				b_row = 0;
+				c_col++;		// Increment the column of C=result matrix for result storage
 			}
+			// Increment the row of Matrix A and perform the above 2 loops again!
+			a_row++;
+			c_row++; // Incrementing the row of matrix c for storage 
 			c_col = 0;
 			b_col = 0;
-			a_row++;
-			c_row++;
+			a_col = 0;
+			b_row = 0;
 		}
+		return;
 	}
 	else {
 		printf("The arrays cannot be multiplied because of wrong formats!");
@@ -349,4 +438,21 @@ void simple_mul(int a[MAX_COL][MAX_COL], int b[MAX_COL][MAX_COL], int c[MAX_COL]
 
 }
 
+
+// This function clears the matrix and replaces each element with a zero.
+// Only the elements which have a value are replaced. The elements with NULL elements are not cleared!
+int clear_max(int max_to_be_cleared[MAX_COL][MAX_COL]) {
+	int i = 0;
+	int j = 0;
+	
+	while (max_to_be_cleared[i][j]) {
+		while (max_to_be_cleared[i][j]) {
+			max_to_be_cleared[i][j] = 0;
+			j++;
+		}
+		i++;
+		j = 0;
+	}
+	return 0;
+}
 
